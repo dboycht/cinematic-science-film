@@ -1,0 +1,16 @@
+cinematic-science-film
+Copyright 2026 dboycht
+
+This product includes software derived from huashu-motion
+(https://github.com/alchaincyf/huashu-motion), MIT License, Copyright (c) 2026 Huashu:
+  - scripts/lib/wav.mjs — the RIFF/WAVE reader, adapted from cli/lib/sound.js
+  - demo/riemann-lite/vendor/om.js — the composition runtime used by the demo
+  - the composition contract (index.html, GSAP timeline, om-score) that SKILL.md and the demo follow
+
+The demo also bundles third-party assets under their own licences:
+  - Noto Sans SC (SIL Open Font License 1.1)
+    demo/riemann-lite/assets/fonts/OFL.txt and LICENSES.md
+  - GSAP (GreenSock standard "no charge" licence)
+    demo/riemann-lite/vendor/GSAP-LICENSE.txt and GSAP-LICENSE.html
+
+The stills in docs/ are frames from films made by the copyright holder.

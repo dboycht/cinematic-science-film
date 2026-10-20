@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="zh-CN" data-composition-variables='[
+  {"id":"title","type":"string","label":"标题","default":"一条线"},
+  {"id":"kicker","type":"string","label":"眉题","default":"1859 · 一个关于素数的问题"},
+  {"id":"accent","type":"color","label":"强调色","default":"#e7b96f"},
+  {"id":"ice","type":"color","label":"冷色","default":"#9ed2ff"},
+  {"id":"endHold","type":"number","label":"结尾停留（秒）","default":1.2,"min":0,"max":6,"step":0.1,"group":"节奏"}
+]'>
+<head>
+<meta charset="utf-8">
+<title>黎曼猜想 · one line</title>
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/om.js"></script>
+<style id="om-fonts">
+@font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-500.woff") format("woff"); font-weight: 500; font-style: normal; }
+@font-face { font-family: "Noto Sans SC"; src: url("assets/fonts/NotoSansSC-900.woff") format("woff"); font-weight: 900; font-style: normal; }
+</style>
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+  #film { position: relative; width: 100%; height: 100%; overflow: hidden; background: #03050a; color: #e8edf6;
+          font-family: "Noto Sans SC", sans-serif; font-weight: 500; }
+  #stage { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* 2.39:1 inside 16:9: 1920 × 804, 138 px bars */
+  .bar { position: absolute; left: 0; right: 0; height: 13.8%; background: #000; z-index: 6; }
+  .bar.top { top: 0; } .bar.bottom { bottom: 0; }
+  .grain { position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: .055;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .t { position: absolute; inset: 0; z-index: 10; }
+  .kicker { position: absolute; left: 120px; top: 274px; font-size: 24px; letter-spacing: 8px; color: #e7b96f; }
+  .hero { position: absolute; left: 116px; top: 336px; margin: 0; font-size: 148px; line-height: 1; font-weight: 900; letter-spacing: -4px; }
+  .sub { position: absolute; left: 120px; top: 536px; font-size: 42px; opacity: .78; letter-spacing: 2px; }
+  .blk { position: absolute; left: 120px; bottom: 168px; }
+  .blk .k { font-size: 22px; letter-spacing: 7px; color: #e7b96f; margin-bottom: 18px; }
+  .blk h2 { margin: 0 0 14px; font-size: 76px; line-height: 1.08; font-weight: 900; letter-spacing: -2px; }
+  .blk .s { font-size: 34px; opacity: .72; letter-spacing: 2px; }
+  .end { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    background: radial-gradient(ellipse 46% 42% at 50% 50%, rgba(3,5,10,.94) 0%, rgba(3,5,10,.80) 55%, rgba(3,5,10,0) 100%); }
+  .end h2 { margin: 0; font-size: 132px; font-weight: 900; letter-spacing: 10px; }
+  .end .q { font-size: 46px; letter-spacing: 14px; color: #e7b96f; }
+  .end .made { position: absolute; bottom: 150px; font-size: 18px; letter-spacing: 6px; opacity: .38; }
+  .foot { position: absolute; left: 120px; bottom: 84px; font-size: 15px; letter-spacing: 6px; color: #8c9bb3; }
+  .foot b { color: #e7b96f; font-weight: 500; }
+</style>
+</head>
+<body>
+<!--
+  riemann-lite — the smallest film that still exercises the cinematic-science-film checklist.
+  One vertical line is the open question, the number axis, the critical line and the end mark.
+  10 bars at 100 BPM = 24.0 s; every caption sits on a bar line; the score's marks land on the same bars.
+-->
+<div id="film" data-composition-id="film" data-width="1920" data-height="1080">
+  <audio id="om-sound" src="assets/sound.wav" data-start="0" data-duration="25.2" data-track-index="8" data-volume="1"></audio>
+  <canvas id="stage" width="1920" height="1080" data-layout-allow-occlusion data-om-id="world"></canvas>
+  <div class="grain"></div>
+  <div class="bar top"></div><div class="bar bottom"></div>
+
+  <section class="t" id="t-open" data-om-id="open">
+    <div class="kicker" data-var-text="kicker">1859 · 一个关于素数的问题</div>
+    <h1 class="hero" data-om-var="title">一条线</h1>
+    <div class="sub">所有非平凡零点，都在这条线上？</div>
+    <div class="foot"><b>01</b> &nbsp; THREAD &nbsp; 一条线</div>
+  </section>
+
+  <section class="t" id="t-primes" data-om-id="primes">
+    <div class="blk">
+      <div class="k">素数 · PRIME NUMBERS</div>
+      <h2>数字世界的原子</h2>
+      <div class="s">2 &nbsp; 3 &nbsp; 5 &nbsp; 7 &nbsp; 11 &nbsp; 13 &nbsp; 17 &nbsp; 19 &nbsp; 23 &nbsp; …</div>
+    </div>
+    <div class="foot"><b>02</b> &nbsp; PRIMES &nbsp; 素数</div>
+  </section>
+
+  <section class="t" id="t-zeros" data-om-id="zeros">
+    <div class="blk">
+      <div class="k">非平凡零点 · ZEROS</div>
+      <h2>它们排成一条直线</h2>
+      <div class="s">σ = 1/2 &nbsp;·&nbsp; 已验证到 10¹³ 个</div>
+    </div>
+    <div class="foot"><b>03</b> &nbsp; CRITICAL LINE &nbsp; 临界线</div>
+  </section>
+
+  <section class="t" id="t-end" data-om-id="end">
+    <div class="end">
+      <h2>黎曼猜想</h2>
+      <div class="q">1859 — ?</div>
+      <div class="made">MADE WITH HUASHU-MOTION</div>
+    </div>
+    <div class="foot"><b>04</b> &nbsp; 1859 — ?</div>
+  </section>
+</div>
+
+<script type="text/vnd.abc" id="om-score">
+% 黎曼猜想 / riemann-lite · 10 bars, 100 bpm, D minor · no drums, no thumps by design
+% bars 1–2   open: drone + one piano note (the question)
+% bars 3–5   primes: theme on violins, harp enters
+% bars 6–8   zeros: suspended harmony, rising
+% bars 9–10  end: theme alone, D add-9 (unresolved)
+X:1
+T:黎曼猜想 · one line
+M:4/4
+L:1/8
+Q:1/4=100
+K:Dm
+V:LOW inst=lowstr gain=0.85
+!mark:open! !p! D,,8 | D,,8 |
+!mark:primes! !p! D,,8 | _B,,8 | F,,8 |
+!mark:zeros! !mf! A,,8 | D,,8 | D,,8 |
+!mark:end! !mp! _B,,8 | !fermata! D,,8 |
+V:STR inst=strings gain=0.7
+!p! [D,F,A,]8 | [D,F,A,]8 |
+!p! [D,F,A,]8 | [D,F,_B,]8 | [C,F,A,]8 |
+!mf! [^C,E,A,]8 | [D,F,A,]8 | [C,E,G,]8 |
+!mp! [D,F,_B,]8 | !fermata! [D,F,A,]8 |
+V:VLN inst=violins role=melody
+z8 | z8 |
+!mp! A4 F2 E2 | D6 z2 | c4 A4 |
+!mf! E8 | d4 f4 | e4 c4 |
+!mp! D4 F4 | !fermata! A8 |
+V:PNO inst=piano gain=0.9
+!mp! D2 z6 | A,2 z6 |
+!p! D2 F2 A2 F2 | _B,2 D2 F2 D2 | C2 F2 A2 F2 |
+!mf! ^C2 E2 A2 E2 | [D,F,A,]8 | [C,E,G,]8 |
+!mp! [_B,,D,F,]8 | !fermata! [D,,D,A,D]8 |
+V:HARP inst=harp gain=0.55
+Z2 |
+!mp! D,F,A,d F,A,d,F | _B,,D,F,_B D,F,_B,D | C,F,A,c F,A,c,F |
+!mf! ^C,E,A,^c E,A,^c,E | D,F,A,d F,A,d,F | C,E,G,c E,G,c,G |
+!mp! D,F,A,d A,F,D,A, | !fermata! [D,F,A,D]8 |
+</script>
+
+<script>
+(() => {
+  const V = OM.vars();
+
+  // a whitespace-only container is measured as a full-frame text box by the layout checker
+  const stripSpace = () => {
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const kill = [];
+    for (let n; (n = w.nextNode());) if (!n.nodeValue.trim()) kill.push(n);
+    kill.forEach((n) => n.remove());
+  };
+  stripSpace();
+  addEventListener('load', stripSpace);
+
+  const W = 1920, H = 1080, CX = W / 2, CY = H / 2;
+  const BPM = 100, BEAT = 60 / BPM, BAR = 4 * BEAT;      // 0.6 s beat, 2.4 s bar
+  const END = 10 * BAR;                                   // 24.0 s
+  const T = { open: 0, primes: 2 * BAR, zeros: 5 * BAR, end: 8 * BAR };
+
+  const accent = V.accent || '#e7b96f';
+  const ice = V.ice || '#9ed2ff';
+  const rgba = (hex, a) => {
+    const n = parseInt(hex.slice(1), 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  };
+  const A = (v) => rgba(accent, v);
+  const I = (v) => rgba(ice, v);
+  const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const sg = (t, a, b) => cl((t - a) / (b - a));
+  const lerp = (a, b, u) => a + (b - a) * u;
+  const eo = (u) => 1 - Math.pow(1 - u, 3);
+  const io = (u) => (u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2);
+
+  const ctx = document.getElementById('stage').getContext('2d');
+
+  // camera: [time, world x, world y, zoom]; never parked (two slow sines on top)
+  const CAM = [
+    [0.0, 960, 540, 1.16],
+    [4.8, 940, 520, 1.03],
+    [7.4, 968, 552, 1.10],
+    [9.8, 946, 528, 1.15],
+    [12.0, 960, 540, 1.02],
+    [16.4, 972, 548, 1.12],
+    [19.2, 950, 532, 1.06],
+    [END, 960, 540, 1.04],
+  ];
+  function camAt(t) {
+    let i = 0;
+    while (i < CAM.length - 2 && CAM[i + 1][0] <= t) i++;
+    const a = CAM[i], b = CAM[i + 1];
+    const u = io(sg(t, a[0], b[0]));
+    return {
+      x: lerp(a[1], b[1], u) + Math.sin(t * .53) * 10 + Math.sin(t * .19) * 16,
+      y: lerp(a[2], b[2], u) + Math.cos(t * .41) * 8 + Math.cos(t * .23) * 14,
+      z: Math.exp(lerp(Math.log(a[3]), Math.log(b[3]), u)) * (1 + .012 * Math.sin(t * .29)),
+    };
+  }
+  const applyCam = (c) => ctx.setTransform(c.z, 0, 0, c.z, CX - c.x * c.z, CY - c.y * c.z);
+
+  // ---------- deterministic dust ----------
+  const DUST = Array.from({ length: 420 }, (_, i) => {
+    const r = Math.sin(i * 127.1 + 311.7) * 43758.5453;
+    const r2 = Math.sin(i * 269.5 + 183.3) * 43758.5453;
+    return { x: (r - Math.floor(r)) * W, y: (r2 - Math.floor(r2)) * H, s: .5 + ((i * 37) % 100) / 90 };
+  });
+
+  function background(t) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const g = ctx.createRadialGradient(CX, CY, 60, CX, CY, 1100);
+    g.addColorStop(0, '#0b1424');
+    g.addColorStop(.55, '#060b16');
+    g.addColorStop(1, '#02040a');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    // the ground itself breathes: two incommensurate slow sines, so the lift never parks at a peak
+    const breath = .050 + .022 * Math.sin(t * .8) + .016 * Math.sin(t * 1.9 + 1.1);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = `rgba(22,36,64,${breath.toFixed(4)})`;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
+
+    // three big soft lamps drifting at 40–60 px/s: the "moving light" that keeps a dark film alive
+    const lamps = [
+      [CX - 420 + Math.sin(t * .11) * 420, CY - 120 + Math.cos(t * .07) * 190, 820, ice, .070],
+      [CX + 380 + Math.cos(t * .09) * 380, CY + 60 + Math.sin(t * .13) * 210, 780, accent, .052],
+      [CX + Math.sin(t * .05) * 560, CY + Math.sin(t * .17) * 120, 920, '#6f8cff', .040],
+    ];
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [x, y, r, c, a] of lamps) {
+      const lg = ctx.createRadialGradient(x, y, 0, x, y, r);
+      lg.addColorStop(0, rgba(c, a * (1 + .08 * Math.sin(t * .5))));
+      lg.addColorStop(1, rgba(c, 0));
+      ctx.fillStyle = lg;
+      ctx.fillRect(0, 0, W, H);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+
+    // dust, slower than the camera
+    ctx.globalCompositeOperation = 'lighter';
+    for (const d of DUST) {
+      const x = (d.x + t * 11 * d.s) % W;
+      const y = d.y + Math.sin(t * .33 + d.s * 9) * 9;
+      ctx.fillStyle = I(.07 + .06 * Math.sin(t * .7 + d.x));
+      ctx.fillRect(x, y, d.s, d.s);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // ---------- the one recurring object ----------
+  const lineLen = (t) => {
+    const grow = eo(sg(t, 0, 2.4));
+    const shrink = 1 - .55 * sg(t, T.end, T.end + 2.2);
+    return 330 * grow * shrink;
+  };
+
+  function thread(t) {
+    const half = lineLen(t);
+    if (half < 1) return;
+    const x = CX;
+    // the axis dims while the primes are lit, so the beads read as points, not a white bar
+    const dim = 1 - .42 * sg(t, T.primes, T.primes + .5) * (1 - sg(t, T.zeros - .2, T.zeros + .3));
+    // outer haze
+    ctx.globalCompositeOperation = 'lighter';
+    const hg = ctx.createLinearGradient(x - 26, 0, x + 26, 0);
+    hg.addColorStop(0, A(0)); hg.addColorStop(.5, A(.10 * dim)); hg.addColorStop(1, A(0));
+    ctx.fillStyle = hg;
+    ctx.fillRect(x - 26, CY - half, 52, half * 2);
+    // the line itself, with a travelling highlight
+    const lg = ctx.createLinearGradient(0, CY - half, 0, CY + half);
+    const peak = .55 + .45 * Math.sin(t * 1.7);
+    lg.addColorStop(0, A(0));
+    lg.addColorStop(cl(peak, .05, .95), A(.92 * dim));
+    lg.addColorStop(1, A(.10 * dim));
+    ctx.fillStyle = lg;
+    ctx.fillRect(x - 1.7, CY - half, 3.4, half * 2);
+    // the growing tip carries a small hot point while the thread is being drawn
+    const grow = 1 - sg(t, 2.2, 2.8);
+    if (grow > .02) {
+      const ty = CY + half;
+      const tg = ctx.createRadialGradient(x, ty, 0, x, ty, 26);
+      tg.addColorStop(0, A(.9 * grow)); tg.addColorStop(.28, A(.28 * grow)); tg.addColorStop(1, A(0));
+      ctx.fillStyle = tg;
+      ctx.beginPath(); ctx.arc(x, ty, 26, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = `rgba(255,244,220,${(.9 * grow).toFixed(3)})`;
+      ctx.beginPath(); ctx.arc(x, ty, 2.6, 0, Math.PI * 2); ctx.fill();
+    }
+    // a slow scanner across the line: proof that something is always moving
+    const sy = CY - half + ((t * 46) % Math.max(1, half * 2));
+    const sgr = ctx.createLinearGradient(0, sy - 40, 0, sy + 40);
+    sgr.addColorStop(0, A(0)); sgr.addColorStop(.5, A(.28 * dim)); sgr.addColorStop(1, A(0));
+    ctx.fillStyle = sgr;
+    ctx.fillRect(x - 12, sy - 40, 24, 80);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // ---------- primes on the axis ----------
+  const isPrime = (n) => {
+    if (n < 2) return false;
+    for (let d = 2; d * d <= n; d++) if (n % d === 0) return false;
+    return true;
+  };
+  const PRIMES = Array.from({ length: 96 }, (_, i) => i + 2).filter(isPrime);
+  const py = (p) => CY + 300 - (p / 100) * 600;
+
+  function primes(t) {
+    const on = sg(t, T.primes - .1, T.primes + .4) * (1 - sg(t, T.zeros - .2, T.zeros + .5));
+    if (on <= 0) return;
+    const bar = sg(t, T.zeros - .6, T.zeros + .2);
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < PRIMES.length; i++) {
+      const p = PRIMES[i];
+      // light every fifth prime in turn: the axis fills evenly instead of growing one hot blob at the bottom
+      const at = T.primes + .2 + (i % 5) * .06 + Math.floor(i / 5) * .42;
+      const u = eo(sg(t, at, at + .5));
+      const y = py(p);
+      // a slow shimmer, so a lit bead is never a frozen dot
+      const sh = 1 + .10 * Math.sin(t * 2.1 + p * .7);
+      if (u <= 0) {
+        ctx.fillStyle = I(.18 * on);
+        ctx.fillRect(CX - 1, y - .5, 2, 1);
+        continue;
+      }
+      // bead: small enough to stay a bead — 25 primes over 600 px are 24 px apart
+      const r = (2.4 + 3.2 * u) * sh;
+      const bg = ctx.createRadialGradient(CX, y, 0, CX, y, (12 + 5 * u) * sh);
+      bg.addColorStop(0, I(.92 * u * on));
+      bg.addColorStop(.35, I(.14 * u * on));
+      bg.addColorStop(1, I(0));
+      ctx.fillStyle = bg;
+      ctx.beginPath(); ctx.arc(CX, y, (12 + 5 * u) * sh, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = I(.95 * u * on);
+      ctx.beginPath(); ctx.arc(CX, y, r, 0, Math.PI * 2); ctx.fill();
+      // beam to the right, a short echo to the left
+      const len = 30 + 24 * u;
+      const g = ctx.createLinearGradient(CX, 0, CX + len, 0);
+      g.addColorStop(0, I(.38 * u * on)); g.addColorStop(1, I(0));
+      ctx.fillStyle = g;
+      ctx.fillRect(CX + 2, y - .6, len, 1.2);
+      const g2 = ctx.createLinearGradient(CX, 0, CX - len * .4, 0);
+      g2.addColorStop(0, I(.16 * u * on)); g2.addColorStop(1, I(0));
+      ctx.fillStyle = g2;
+      ctx.fillRect(CX - len * .4, y - .5, len * .4, 1);
+      // label every third prime: a legible column instead of a wall of digits
+      if (i % 3 === 0 && u > .45) {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = `rgba(226,236,250,${(.55 * u * on * (1 - bar)).toFixed(3)})`;
+        ctx.font = '500 18px "Noto Sans SC"';
+        ctx.fillText(String(p), CX + len + 14, y + 6);
+        ctx.globalCompositeOperation = 'lighter';
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // ---------- the zeros, as conjugate pairs ----------
+  const GAMMAS = [14.13, 21.02, 25.01, 30.42, 32.94, 37.59];
+  const gy = (g) => CY + 220 - (g - 10) * 16;
+  function zeros(t) {
+    const on = sg(t, T.zeros - .3, T.zeros + .3) * (1 - sg(t, T.end - .1, T.end + 1.0));
+    if (on <= 0) return;
+    ctx.globalCompositeOperation = 'lighter';
+    GAMMAS.forEach((g, k) => {
+      const at = T.zeros + .35 + k * .62;
+      const u = eo(sg(t, at, at + .7));
+      if (u <= 0) return;
+      const y = gy(g) + Math.sin(t * 1.15 + k * 1.7) * 3;
+      const sep = 34 + 26 * u;
+      for (const s of [-1, 1]) {
+        const x = CX + s * sep;
+        const rg = ctx.createRadialGradient(x, y, 0, x, y, 40);
+        rg.addColorStop(0, A(.9 * u * on));
+        rg.addColorStop(.3, A(.25 * u * on));
+        rg.addColorStop(1, A(0));
+        ctx.fillStyle = rg;
+        ctx.beginPath(); ctx.arc(x, y, 40, 0, Math.PI * 2); ctx.fill();
+        // interference wave from each zero
+        ctx.strokeStyle = I(.16 * u * on);
+        ctx.lineWidth = 1;
+        for (let w = 0; w < 3; w++) {
+          const amp = 8 + w * 7;
+          ctx.beginPath();
+          for (let d = 0; d <= 240; d += 4) {
+            const xx = CX + s * (sep + d);
+            const yy = y + Math.sin(d * .055 - t * 2.6 + w * 1.3) * amp * (1 - d / 260) * u;
+            if (d === 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+          }
+          ctx.stroke();
+        }
+      }
+      // the label lives on the right, in the accent colour
+      if (u > .55) {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = `rgba(231,185,111,${(.72 * u * on).toFixed(3)})`;
+        ctx.font = '500 20px "Noto Sans SC"';
+        ctx.fillText(g.toFixed(2), CX + 74 + 26 * u, y + 7);
+        ctx.fillStyle = `rgba(158,210,255,${(.45 * u * on).toFixed(3)})`;
+        ctx.font = '500 16px "Noto Sans SC"';
+        ctx.fillText(`−${g.toFixed(2)}`, CX - 118 - 26 * u, y + 6);
+        ctx.globalCompositeOperation = 'lighter';
+      }
+    });
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // ---------- the end field ----------
+  function endField(t) {
+    const u = sg(t, T.end + .4, T.end + 2.4);
+    if (u <= 0) return;
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 120; i++) {
+      const a = i * 2.39996;
+      const r = 80 + ((i * 53) % 420);
+      const x = CX + Math.cos(a + t * .05) * r;
+      const y = CY + Math.sin(a + t * .05) * r * .62;
+      const tw = .5 + .5 * Math.sin(t * 1.6 + i);
+      ctx.fillStyle = I(.10 * u * tw);
+      ctx.fillRect(x, y, 1.6, 1.6);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  function draw(t) {
+    background(t);
+    const c = camAt(t);
+    applyCam(c);
+    thread(t);
+    primes(t);
+    zeros(t);
+    endField(t);
+
+    // two wide soft bands crossing the plate in opposite directions (the "scanner")
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [speed, phase, alpha] of [[.17, 0, .085], [.23, .35, .045]]) {
+      const sx = -300 + (((t * speed + phase) % 1)) * (W + 600);
+      const bg = ctx.createLinearGradient(sx - 260, 0, sx + 260, 0);
+      bg.addColorStop(0, I(0)); bg.addColorStop(.5, I(alpha)); bg.addColorStop(1, I(0));
+      ctx.fillStyle = bg;
+      ctx.fillRect(sx - 260, 138, 520, 804);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+
+    // vignette
+    const vg = ctx.createRadialGradient(CX, CY, 420, CX, CY, 1180);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,.62)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // ---------- timeline ----------
+  const tl = gsap.timeline({ paused: true });
+  tl.addLabel('scene:open', T.open)
+    .addLabel('scene:primes', T.primes)
+    .addLabel('scene:zeros', T.zeros)
+    .addLabel('scene:end', T.end);
+
+  OM.clock(tl, draw, END);
+
+  const show = (sel, at, opts = {}) => {
+    const el = document.querySelector(sel);
+    gsap.set(el, { autoAlpha: 0, y: opts.y ?? 26, filter: 'blur(9px)' });
+    tl.fromTo(el, { autoAlpha: 0, y: opts.y ?? 26, filter: 'blur(9px)' },
+      { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: opts.dur ?? 1, ease: 'expo.out', immediateRender: false }, at);
+  };
+  const hide = (sel, at, opts = {}) => {
+    const el = document.querySelector(sel);
+    tl.fromTo(el, { autoAlpha: 1, y: 0, filter: 'blur(0px)' },
+      { autoAlpha: 0, y: opts.y ?? -18, filter: 'blur(6px)', duration: opts.dur ?? .55, ease: 'power2.in', immediateRender: false }, at);
+  };
+
+  gsap.set('#t-open', { autoAlpha: 1 });
+  tl.fromTo('#t-open .hero', { y: 80 }, { y: 0, duration: 1.8, ease: 'expo.out', immediateRender: false }, 0);
+  hide('#t-open', T.primes - .35);
+  show('#t-primes', T.primes + .45, { dur: 1.1 });
+  hide('#t-primes', T.zeros - .45);
+  show('#t-zeros', T.zeros + .5, { dur: 1.1 });
+  hide('#t-zeros', T.end - .5);
+  show('#t-end', T.end + .55, { dur: 1.4 });
+  tl.to({}, { duration: V.endHold });
+
+  // sound: no drum kit, no impact / hit / thud anywhere — these are airy cues only
+  OM.music({ bpm: BPM });
+  OM.sfx('riser', T.zeros - .9, { dur: 1.9, gain: .38 });
+  PRIMES.filter((p) => p <= 47).forEach((p, i) => {
+    const idx = PRIMES.indexOf(p);
+    OM.sfx('pop', T.primes + .2 + (idx % 5) * .22 + Math.floor(idx / 5) * .36 + .1, { note: 1 + i * .25, gain: .12 });
+  });
+  GAMMAS.forEach((g, i) => {
+    OM.sfx('chime', T.zeros + .35 + i * .62 + .2, { note: 1 + i * .4, gain: .16 });
+  });
+  OM.sfx('whoosh', T.end + .2, { gain: .30 });
+
+  window.__timelines['film'] = tl;
+})();
+</script>
+</body>
+</html>
